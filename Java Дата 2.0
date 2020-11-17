@@ -1,0 +1,130 @@
+public class Date {
+
+    private int year;
+    private int month;
+    private int day;
+    private static int[] m = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    public Date() {
+        year = 0;
+        month = 0;
+        day = 0;
+    }
+    
+    
+    public Date(int year, int month, int day) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+    }
+    
+    public Date(String data) {
+        int d[] = new int[3];
+        byte i = 0;
+        for (String retval : data.split("-")) {
+            d[i] = Integer.parseInt(retval);
+            i++;
+        }
+        this.year = d[0];
+        this.month = d[1];
+        this.day = d[2];
+    }
+    
+    public Date(Date other) {
+        year = other.year;
+        month = other.month;
+        day = other.day;
+    }
+    
+    public static Date plus(Date subd, int sday){
+        if(subd.year % 4 == 0)
+            m[1] = 29;
+        else
+            m[1] = 28;
+        if(sday == 0)
+            return subd;
+        else{
+            int tempd = m[subd.month-1] - subd.day;
+            if(tempd <= sday){
+                subd.day = 1;
+                if(subd.month == 12){
+                    subd.month = 1;
+                    subd.year++;
+                }
+                else
+                    subd.month++;
+                return plus(subd, sday - tempd - 1);
+            }
+            else{
+                subd.day += sday;
+                return subd;
+            }
+        }
+    }
+    
+    public static Date sub(Date subd, int sday){
+        if(subd.year % 4 == 0)
+            m[1] = 29;
+        else
+            m[1] = 28;
+        if(sday == 0)
+            return subd;
+        else{
+            int tempd = subd.day;
+            if(tempd <= sday){
+                if(subd.month == 1){
+                    subd.month = 12;
+                    subd.year--;
+                }
+                else
+                    subd.month--;
+                subd.day = m[subd.month-1];
+                return sub(subd, sday - tempd );
+            }
+            else{
+                subd.day -= sday;
+                return subd;
+            }
+        }
+    }
+    
+    public boolean isEqual(Date other){
+        if(day == other.day && month == other.month && year == other.year)
+            return true;
+        else
+            return false;
+    }
+    
+    public static int diff(Date d1, Date d2){
+        m[1] = 28;
+        int vis = 0;
+        int y1 = d1.year;
+        int y2 = d2.year;
+        int iter = 1;
+        if(d1.year > d2.year){
+            iter = -iter; 
+        }
+        else
+            y2++;
+        while(y1 != y2){
+            if(y1 % 4 == 0)
+                vis++;
+            y1 += iter;
+        }
+        
+        int Sum1 = d1.day, Sum2 = d2.day;
+        for (int i = 0; i < (d1.month-1); i++) {
+            Sum1 += m[i];
+        }
+        for (int i = 0; i < (d2.month-1); i++) {
+            Sum2 += m[i];
+        }
+        Sum1 += d1.year*365;
+        Sum2 += d2.year*365;
+        return(Math.abs(Sum1-Sum2)+vis);
+    }
+    
+    public void show(){
+        System.out.println(year + " " + month + " " + day);
+    }
+}
